@@ -33,6 +33,19 @@ pub fn quickpartion<T>(slice: &mut [T], pivot_index: usize) -> usize
     result
 }
 
+// pub fn quickselect<T>(slice: &mut [T], nth: usize) where T: Ord + Copy {
+//     let pivot_index = rand::random::<usize>() % slice.len();
+
+//     let pivot_position = quickpartion(slice, pivot_index);
+//     if pivot_position == nth { return; }
+
+//     if nth < pivot_position {
+//         quickselect(&mut slice[0 .. pivot_position], nth);
+//     } else {
+//         quickselect(&mut slice[pivot_position + 1 ..], nth - (pivot_position + 1));
+//     }
+// }
+
 pub fn quickselect<T>(_slice: &mut [T], mut nth: usize) where T: Ord + Copy {
     let mut lo = 0;
     let mut hi = _slice.len();
@@ -53,7 +66,11 @@ pub fn quickselect<T>(_slice: &mut [T], mut nth: usize) where T: Ord + Copy {
     }
 }
 
-pub fn quickselect_multiple<T>(slice: &mut [T], nths: &[usize], mut accum: usize)
+pub fn quickselect_multiple<T>(slice: &mut [T], nths: &[usize]) where T: Ord + Copy {
+    return _quickselect_multiple(slice, nths, 0);
+}
+
+fn _quickselect_multiple<T>(slice: &mut [T], nths: &[usize], mut accum: usize)
     where T: Ord + Copy {
     assert!(nths.len() > 0);
 
@@ -71,7 +88,7 @@ pub fn quickselect_multiple<T>(slice: &mut [T], nths: &[usize], mut accum: usize
         let left_nths = & nths[0 .. pivot_nths_index];
         if left_nths.len() > 0 {
             let left_slice = &mut slice[0 .. pivot_position];
-            quickselect_multiple(left_slice, left_nths, accum);
+            _quickselect_multiple(left_slice, left_nths, accum);
         }
     }
 
@@ -88,7 +105,7 @@ pub fn quickselect_multiple<T>(slice: &mut [T], nths: &[usize], mut accum: usize
         if right_nths.len() > 0 {
             accum += pivot_position + 1;
             let right_slice = &mut slice[pivot_position + 1 ..];
-            quickselect_multiple(right_slice, right_nths, accum);
+            _quickselect_multiple(right_slice, right_nths, accum);
         }
     }
 }
