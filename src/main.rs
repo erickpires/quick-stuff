@@ -1,5 +1,6 @@
 extern crate quickselect;
 extern crate rand;
+extern crate time;
 
 use quickselect::*;
 use rand::Rng;
@@ -24,26 +25,40 @@ fn main() {
     // println!("{:?}", vec);
 
     const N_ELEM : usize = 1000;
+    const N_SEARCHES : usize = 100;
+    const WINDOW_SIZE : usize = N_ELEM / N_SEARCHES;
+    const N_ITER : usize = 1000;
+
     let mut vec = Vec::new();
     for i in 0 .. N_ELEM {
         vec.push(i);
     }
 
-    'outter: loop {
+    let mut time_sum = 0.0;
+    'outter: for _ in 0 .. N_ITER {
         let mut rng = rand::thread_rng();
         rng.shuffle(vec.as_mut_slice());
 
 
         let mut nths = Vec::new();
-        for index in 0 .. N_ELEM / 10 {
-            let rand_index = 10 * index + (rand::random::<usize>() % 10);
+        for index in 0 .. N_SEARCHES {
+            let rand_index = WINDOW_SIZE * index +
+                (rand::random::<usize>() % WINDOW_SIZE);
+
             let choosen = vec[rand_index];
             nths.push(choosen);
         }
 
         quicksort(nths.as_mut_slice());
 
-        quickselect_multiple(vec.as_mut_slice(), nths.as_slice(), 0);
+        let t0 = time::PreciseTime::now();
+        // quicksort(vec.as_mut_slice());
+        quickselect_multiple(vec.as_mut_slice(), nths.as_slice());
+        let t1 = time::PreciseTime::now();
+
+        let duration = t0.to(t1);
+        let micros = duration.num_microseconds().unwrap();
+        time_sum += micros as f64;
 
         for i in 0 .. nths.len() {
             let index = nths[i];
@@ -54,6 +69,8 @@ fn main() {
         }
     }
 
+    let mean = time_sum / N_ITER as f64;
+    println!("Took: {}us", mean);
 }
 
 
