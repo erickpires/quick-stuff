@@ -33,16 +33,23 @@ pub fn quickpartion<T>(slice: &mut [T], pivot_index: usize) -> usize
     result
 }
 
-pub fn quickselect<T>(slice: &mut [T], nth: usize) where T: Ord + Copy {
-    let pivot_index = rand::random::<usize>() % slice.len();
+pub fn quickselect<T>(_slice: &mut [T], mut nth: usize) where T: Ord + Copy {
+    let mut lo = 0;
+    let mut hi = _slice.len();
 
-    let pivot_position = quickpartion(slice, pivot_index);
-    if pivot_position == nth { return; }
+    loop {
+        let slice = &mut _slice[lo .. hi];
+        let pivot_index = rand::random::<usize>() % slice.len();
 
-    if nth < pivot_position {
-        quickselect(&mut slice[0 .. pivot_position], nth);
-    } else {
-        quickselect(&mut slice[pivot_position + 1 ..], nth - (pivot_position + 1));
+        let pivot_position = quickpartion(slice, pivot_index);
+        if pivot_position == nth { return; }
+
+        if nth < pivot_position {
+            hi = lo + pivot_position;
+        } else {
+            lo += pivot_position + 1;
+            nth = nth - (pivot_position + 1);
+        }
     }
 }
 
