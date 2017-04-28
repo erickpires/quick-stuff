@@ -69,34 +69,36 @@ usize quickpartion_double(double* array, usize array_size, usize pivot_index) {
 }
 
 void quickselect_usize(usize* array, usize array_size, usize nth) {
-    usize pivot_index = rand() % array_size;
+    while(TRUE) {
+        usize pivot_index = rand() % array_size;
 
-    usize pivot_position = quickpartion_usize(array, array_size, pivot_index);
-    if (pivot_position == nth) { return; }
+        usize pivot_position = quickpartion_usize(array, array_size, pivot_index);
+        if (pivot_position == nth) { return; }
 
-    if (nth < pivot_position) {
-        quickselect_usize(array, pivot_position, nth);
-    } else {
-        usize new_size = array_size - (pivot_position + 1);
-        usize new_nth  = nth - (pivot_position + 1);
-        usize* new_array = array + (pivot_position + 1);
-        quickselect_usize(new_array, new_size, new_nth);
+        if (nth < pivot_position) {
+            array_size = pivot_position;
+        } else {
+            array_size -= pivot_position + 1;
+            nth  -= pivot_position + 1;
+            array += pivot_position + 1;
+        }
     }
 }
 
 void quickselect_double(double* array, usize array_size, usize nth) {
-    usize pivot_index = rand() % array_size;
+    while (TRUE) {
+        usize pivot_index = rand() % array_size;
 
-    usize pivot_position = quickpartion_double(array, array_size, pivot_index);
-    if (pivot_position == nth) { return; }
+        usize pivot_position = quickpartion_double(array, array_size, pivot_index);
+        if (pivot_position == nth) { return; }
 
-    if (nth < pivot_position) {
-        quickselect_double(array, pivot_position, nth);
-    } else {
-        usize new_size = array_size - (pivot_position + 1);
-        usize new_nth  = nth - (pivot_position + 1);
-        double* new_array = array + (pivot_position + 1);
-        quickselect_double(new_array, new_size, new_nth);
+        if (nth < pivot_position) {
+            array_size = pivot_position;
+        } else {
+            array_size -= pivot_position + 1;
+            nth  -= pivot_position + 1;
+            array += pivot_position + 1;
+        }
     }
 }
 
@@ -263,17 +265,20 @@ void swap_usize(usize* array, usize i0, usize i1) {
 }
 
 usize binary_search(usize* array, usize array_size, double elem) {
-    if (array_size == 0) { return 0; }
+    usize result = 0;
+    while(TRUE) {
+        if (array_size == 0) { return result; }
 
-    usize mid_index = array_size / 2;
-    double mid_elem  = array[mid_index];
+        usize mid_index = array_size / 2;
+        double mid_elem  = array[mid_index];
 
-    if (mid_elem == elem) { return mid_index; }
-    if (mid_elem > elem) {
-        return binary_search(array, mid_index , elem);
-    } else {
-        usize* right = array + (mid_index + 1);
-        usize right_size = array_size - (mid_index + 1);
-        return mid_index + 1 + binary_search(right, right_size, elem);
+        if (mid_elem == elem) { return result + mid_index; }
+        if (mid_elem > elem) {
+            array_size = mid_index;
+        } else {
+            array += mid_index + 1;
+            array_size -= mid_index + 1;
+            result += mid_index + 1;
+        }
     }
 }
