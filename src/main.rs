@@ -5,6 +5,8 @@ extern crate time;
 use quickselect::*;
 use rand::Rng;
 
+use std::cmp::Ordering;
+
 fn main() {
     // let mut vec = Vec::new();
     // for _ in 0 .. 100 {
@@ -25,13 +27,13 @@ fn main() {
     // println!("{:?}", vec);
 
     const N_ELEM : usize = 1000;
-    const N_SEARCHES : usize = 100;
+    const N_SEARCHES : usize = 4;
     const WINDOW_SIZE : usize = N_ELEM / N_SEARCHES;
     const N_ITER : usize = 1000;
 
     let mut vec = Vec::new();
     for i in 0 .. N_ELEM {
-        vec.push(i);
+        vec.push(i as f64);
     }
 
     let mut time_sum = 0.0;
@@ -45,7 +47,7 @@ fn main() {
             let rand_index = WINDOW_SIZE * index +
                 (rand::random::<usize>() % WINDOW_SIZE);
 
-            let choosen = vec[rand_index];
+            let choosen = vec[rand_index] as usize;
             nths.push(choosen);
         }
 
@@ -53,7 +55,8 @@ fn main() {
 
         let t0 = time::PreciseTime::now();
         // quicksort(vec.as_mut_slice());
-        quickselect_multiple(vec.as_mut_slice(), nths.as_slice());
+                     // |a: &f64, b: &f64| a.partial_cmp(b).unwrap_or(Ordering::Equal));
+        quickselect_multiple_partial_ord(vec.as_mut_slice(), nths.as_slice());
         let t1 = time::PreciseTime::now();
 
         let duration = t0.to(t1);
@@ -62,7 +65,7 @@ fn main() {
 
         for i in 0 .. nths.len() {
             let index = nths[i];
-            if index != vec[index] {
+            if index as f64 != vec[index] {
                 println!("{}: {}", index, vec[index]);
                 break 'outter;
             }
